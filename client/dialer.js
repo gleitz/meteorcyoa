@@ -1,128 +1,29 @@
-var Dialer = {
-    hole: null,
-    digit: null,
-    moving: false,
-    rotating: false,
-    lastAngle: null,
-    totalAngle: null,
-    maxAngle: null,
-    numberTimeout: null,
+(function($){
+    var hole = null,
+        digit = null,
+        moving = false,
+        selected = false,
+        rotating = false,
+        lastAngle = null,
+        totalAngle = null,
+        maxAngle = null,
+        numberTimeout = null,
+        centerX = null,
+        centerY = null;
 
-    init: function () {
-        this.dial = $("#dialer").get(0);
-        this.number = $("#number");
-        this.center = $("#center").get(0);
-        this.rewind_player = $("#rewind-player").get(0);
+    Meteor.startup(function () {
+        var rect = $('#dialer').get(0).getBoundingClientRect();
+        centerX = rect.left + rect.width / 2;
+        centerY = rect.top + rect.height / 2;
+    });
 
-        var rect = this.dial.getBoundingClientRect();
-        this.centerX = rect.left + rect.width / 2;
-        this.centerY = rect.top + rect.height / 2;
-
-        this.dial.addEventListener("mousedown", this.mousedown.bind(this));
-        this.center.addEventListener("click", this.click.bind(this));
-        addEventListener("mousemove", this.mousemove.bind(this));
-        addEventListener("mouseup", this.mouseup.bind(this));
-    },
-
-    mousedown: function (e) {
-        if (this.rotating || this.moving)
-            return;
-
-        var digit = this.findDigit(e);
-        if (digit === null)
-            return;
-
-        var hole = this.findHole(e);
-        if (hole === null)
-            return;
-
-        this.maxAngle = 135;
-        var rect = offset(hole);
-        var holeAngle = this.getAngle(rect.left + rect.width / 2, rect.top + rect.height / 2);
-
-        if (holeAngle >= 135)
-            this.maxAngle += 360 - holeAngle;
-        else
-            this.maxAngle -= holeAngle;
-
-        this.digit = digit;
-        this.hole = hole;
-        this.rotating = this.moving = true;
-        this.lastAngle = this.getAngle(e.clientX, e.clientY);
-        this.totalAngle = 0;
-        this.dial.classList.add("rotating");
-        this.center.classList.add("rotating");
-        e.preventDefault();
-    },
-
-    mousemove: function (e) {
-        if (!this.rotating || !this.moving)
-            return;
-
-        var angle = this.getAngle(e.clientX, e.clientY);
-        var diff = this.getAngleDiff(this.lastAngle, angle);
-        this.totalAngle += diff;
-        var rotation = Math.min(this.maxAngle, Math.max(0, this.totalAngle));
-        this.dial.style.MozTransform = "rotate(" + rotation + "deg)";
-        this.dial.style.WebkitTransform = "rotate(" + rotation + "deg)";
-        this.lastAngle = angle;
-    },
-
-    mouseup: function (e) {
-        if (!this.rotating || !this.moving)
-            return;
-
-        var rect = this.hole.getBoundingClientRect();
-        $('#intro').text("");
-        this.number.text(this.number.text() + this.digit);
-        this.rewind_player.play();
-
-        this.moving = false;
-        this.lastAngle = this.totalAngle = null;
-        this.dial.classList.remove("rotating");
-        this.center.classList.remove("rotating");
-        this.dial.style.MozTransform = "";
-        this.dial.style.WebkitTransform = "";
-
-        var self = this;
-        var onEnd = function() {
-            self.rotating = false;
-        }
-        setTimeout(onEnd, 800);
-        clearTimeout(this.numberTimeout);
-        this.numberTimeout = setTimeout(function() {
-            playTrack(self.number.text());
-            self.number.text("");
-        }, 3000);
-    },
-
-    click: function (e) {
-        if (this.rotating || this.moving)
-            return;
-
-        var classes = this.center.classList;
-        if (classes.contains("dialing")) {
-            classes.remove("dialing");
-            this.number.text("");
-            this.call.hangUp();
-            this.call = null;
-        } else {
-            classes.add("dialing");
-            this.number.text("");
-            setTimeout(function() {
-                classes.remove("dialing");
-            }, 10000);
-            playTrack(1);
-        }
-    },
-
-    getAngle: function (x, y) {
-        x -= this.centerX;
-        y -= this.centerY;
+    var getAngle = function (x, y) {
+        x -= centerX;
+        y -= centerY;
         return 180 - (Math.atan2(x, y) * 180 / Math.PI);
-    },
+    };
 
-    getAngleDiff: function (from, to) {
+    var getAngleDiff = function (from, to) {
         if (from > to && from > 270 && to < 90)
             return 360 - from + to;
 
@@ -130,9 +31,9 @@ var Dialer = {
             return 360 - to + from;
 
         return to - from;
-    },
+    };
 
-    findDigit: function (e) {
+    var findDigit = function (e) {
         var x = e.clientX;
         var y = e.clientY;
         var digits = $$(".digit");
@@ -145,9 +46,9 @@ var Dialer = {
         }
 
         return null;
-    },
+    };
 
-    findHole: function (e) {
+    var findHole = function (e) {
         var x = e.clientX;
         var y = e.clientY;
         var holes = $$(".hole");
@@ -160,5 +61,110 @@ var Dialer = {
         }
 
         return null;
-    }
-};
+    };
+
+    var mousedown = function (event) {
+        if (selected || moving) {
+            return;
+        }
+
+        var currentDigit = findDigit(event);
+        if (currentDigit === null) {
+            return;
+        }
+
+        var currentHole = findHole(event);
+        if (currentHole === null) {
+            return;
+        }
+
+        maxAngle = 135;
+        var rect = offset(currentHole);
+        var holeAngle = getAngle(rect.left + rect.width / 2, rect.top + rect.height / 2);
+
+        if (holeAngle >= 135) {
+            maxAngle += 360 - holeAngle;
+        } else {
+            maxAngle -= holeAngle;
+        }
+
+        digit = currentDigit;
+        hole = currentHole;
+        rotating = true;
+        moving = true;
+        lastAngle = getAngle(event.clientX, event.clientY);
+        totalAngle = 0;
+        $('#dialer').addClass('rotating');
+        $('#center').addClass('rotating');
+        event.preventDefault();
+    };
+
+    var mousemove = function (e) {
+        if (!rotating || !moving) {
+            return;
+        }
+
+        var angle = getAngle(e.clientX, e.clientY);
+        var diff = getAngleDiff(lastAngle, angle);
+        totalAngle += diff;
+        var rotation = Math.min(maxAngle, Math.max(0, totalAngle));
+
+        $('#dialer').get(0).style.MozTransform = "rotate(" + rotation + "deg)";
+        $('#dialer').get(0).style.WebkitTransform = "rotate(" + rotation + "deg)";
+        lastAngle = angle;
+    };
+
+    var mouseup = function (e) {
+        if (!rotating || !moving) {
+            return;
+        }
+
+        var rect = hole.getBoundingClientRect();
+        $('#intro').text("");
+        $('#number').text($('#number').text() + digit);
+        $('#rewind-player').get(0).play();
+
+        moving = false;
+        lastAngle = null;
+        totalAngle = null;
+        $('#dialer').removeClass('rotating');
+        $('#center').removeClass('rotating');
+        $('#dialer').get(0).style.MozTransform = "";
+        $('#dialer').get(0).style.WebkitTransform = "";
+
+        var onEnd = function() {
+            rotating = false;
+        };
+        setTimeout(onEnd, 800);
+        clearTimeout(numberTimeout);
+        numberTimeout = setTimeout(function() {
+            playTrack($('#number').text());
+            $('#number').text("");
+        }, 3000);
+    };
+
+    var click = function (e) {
+        if (rotating || moving)
+            return;
+
+        if ($('#center').hasClass("dialing")) {
+            $('#center').removeClass("dialing");
+            $('#number').text("");
+        } else {
+            $('#center').add("dialing");
+            $('#number').text("");
+            setTimeout(function() {
+                $('#center').remove("dialing");
+            }, 10000);
+            playTrack(1);
+        }
+    };
+
+    $('html').on('mouseup', 'body', mouseup);
+    Template.dial.events({
+        'mousedown #dialer': mousedown,
+        'mousemove #dialer': mousemove,
+        'click #center': click
+    });
+
+})(jQuery);
