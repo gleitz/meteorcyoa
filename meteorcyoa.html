@@ -1,0 +1,69 @@
+<head>
+    <title>Yet Another Choose Your Own Adventure</title>
+</head>
+
+<body>
+    <div id="heading">
+        <h1>Yet Another Choose Your Own Adventure</h1>
+    </div>
+
+    <div id="number"><span id="intro">Click phone icon to begin...</span></div>
+
+    <div id="phone">
+        <div id="dialer">
+            <div id="center">☎</div>
+            <span class="hole digit b1">1</span>
+            <span class="hole digit b2">2</span>
+            <span class="hole digit b3">3</span>
+            <span class="hole digit b4">4</span>
+            <span class="hole digit b5">5</span>
+            <span class="hole digit b6">6</span>
+            <span class="hole digit b7">7</span>
+            <span class="hole digit b8">8</span>
+            <span class="hole digit b9">9</span>
+            <span class="hole digit b0">0</span>
+        </div>
+
+        <div id="dock">
+            <span class="digit b1">1</span>
+            <span class="digit b2">2</span>
+            <span class="digit b3">3</span>
+            <span class="digit b4">4</span>
+            <span class="digit b5">5</span>
+            <span class="digit b6">6</span>
+            <span class="digit b7">7</span>
+            <span class="digit b8">8</span>
+            <span class="digit b9">9</span>
+            <span class="digit b0">0</span>
+        </div>
+
+        <div id="stop"></div>
+    </div>
+
+    <div id="footer">
+        Benjamin Gleitzman (<a href="http://twitter.com/gleitz">@gleitz</a>)
+    </div>
+    <audio id="rewind-player">
+        <source src="/sounds/rewind.ogg" type="audio/ogg">
+    </audio>
+
+    <svg>
+        <mask id="holes" maskUnits="objectBoundingBox" maskContentUnits="objectBoundingBox">
+            <rect x="0" y="0" width="1" height="1" fill="white"/>
+            <circle cx="0.5" cy="0.88" r="0.08" id="circle" fill="black"/>
+            <circle transform="rotate(30, 0.5, 0.5)" cx="0.5" cy="0.88" r="0.08" id="circle" fill="black"/>
+            <circle transform="rotate(60, 0.5, 0.5)" cx="0.5" cy="0.88" r="0.08" id="circle" fill="black"/>
+            <circle transform="rotate(90, 0.5, 0.5)" cx="0.5" cy="0.88" r="0.08" id="circle" fill="black"/>
+            <circle transform="rotate(120, 0.5, 0.5)" cx="0.5" cy="0.88" r="0.08" id="circle" fill="black"/>
+            <circle transform="rotate(150, 0.5, 0.5)" cx="0.5" cy="0.88" r="0.08" id="circle" fill="black"/>
+            <circle transform="rotate(180, 0.5, 0.5)" cx="0.5" cy="0.88" r="0.08" id="circle" fill="black"/>
+            <circle transform="rotate(210, 0.5, 0.5)" cx="0.5" cy="0.88" r="0.08" id="circle" fill="black"/>
+            <circle transform="rotate(240, 0.5, 0.5)" cx="0.5" cy="0.88" r="0.08" id="circle" fill="black"/>
+            <circle transform="rotate(270, 0.5, 0.5)" cx="0.5" cy="0.88" r="0.08" id="circle" fill="black"/>
+        </mask>
+    </svg>
+    <audio id="player">
+        <source src="/sounds/track001.ogg" />
+        <source src="/sounds/track001.mp3" />
+    </audio>
+</body>
