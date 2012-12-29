@@ -12,12 +12,6 @@
             force = null,
             update = null;
 
-        var color = d3.scale.category10();
-
-        var svg = d3.select("#chart").append("svg")
-            .attr("width", width)
-            .attr("height", height);
-
         function flatten(root) {
             var nodes = [];
             function recurse(node) {
@@ -27,6 +21,12 @@
             recurse(root);
             return nodes;
         }
+
+        var color = d3.scale.category10();
+
+        var svg = d3.select("#chart").append("svg")
+            .attr("width", width)
+            .attr("height", height);
 
         d3.json("nodes.json", function(error, graph) {
             nodes = flatten(graph),

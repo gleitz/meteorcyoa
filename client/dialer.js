@@ -145,7 +145,7 @@
         clearTimeout(endTimeout);
         endTimeout = setTimeout(onEnd, 1000);
         clearTimeout(numberTimeout);
-        numberTimeout = setTimeout(function() {
+        var numberSubmit = function() {
             var number = parseInt($('#number .num').text(), 10);
             if (number == 1980) {
                 number = 2;
@@ -167,6 +167,13 @@
                 // alert("Player stopped");
             // });
             $('#number .num').text("");
+        };
+        numberTimeout = setTimeout(function myHandler() {
+            if (!moving && !rotating) {
+                numberSubmit();
+            } else {
+                numberTimeout = setTimeout(myHandler, 3000);
+            }
         }, 3000);
     };
 
@@ -179,8 +186,10 @@
             $('#center').removeClass("dialing");
             $('#number .num').text("");
         } else {
+            $('#chart').show();
             $('#center').add("dialing");
             $('#number .num').text("");
+            $('#intro').text("");
             setTimeout(function() {
                 $('#center').remove("dialing");
             }, 10000);
