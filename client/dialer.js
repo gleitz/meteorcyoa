@@ -8,10 +8,14 @@
         totalAngle = null,
         maxAngle = null,
         numberTimeout = null,
+        endTimeout = null,
         centerX = null,
-        centerY = null;
+        centerY = null,
+        graph = null,
+        currentPage = 1;
 
     Meteor.startup(function () {
+        graph = $.graph();
         var rect = $('#dialer').get(0).getBoundingClientRect();
         centerX = rect.left + rect.width / 2;
         centerY = rect.top + rect.height / 2;
@@ -121,7 +125,7 @@
 
         var rect = hole.getBoundingClientRect();
         $('#intro').text("");
-        $('#number').text($('#number').text() + digit);
+        $('#number .num').text($('#number .num').text() + digit);
         $('#rewind-player').get(0).play();
 
         moving = false;
@@ -133,26 +137,50 @@
         $('#dialer').get(0).style.WebkitTransform = "";
 
         var onEnd = function() {
+            $('#dialer').get(0).style.MozTransform = "";
+            $('#dialer').get(0).style.WebkitTransform = "";
             rotating = false;
+            moving = false;
         };
-        setTimeout(onEnd, 800);
+        clearTimeout(endTimeout);
+        endTimeout = setTimeout(onEnd, 1000);
         clearTimeout(numberTimeout);
         numberTimeout = setTimeout(function() {
-            playTrack($('#number').text());
-            $('#number').text("");
+            var number = parseInt($('#number .num').text(), 10);
+            if (number == 1980) {
+                number = 2;
+            }
+            var page = Pages.findOne({id:number});
+            var thisPage = Pages.findOne({id:currentPage});
+            if (!page || (page && !_.contains(thisPage.children, page.id)) && (page.id != 2 && !graph.findNode(page.id))) {
+                $('#number .num').text("");
+                $('#intro').html('Invalid number &mdash; dial again...');
+                return;
+            }
+            graph.addNode(page, currentPage);
+            graph.centerNode(number);
+            currentPage = number;
+            playTrack(number);
+            // Bind the player ended here?
+            // $("#player").bind('ended', function(){
+                // done playing
+                // alert("Player stopped");
+            // });
+            $('#number .num').text("");
         }, 3000);
     };
 
     var click = function (e) {
-        if (rotating || moving)
+        if (rotating || moving) {
             return;
+        }
 
         if ($('#center').hasClass("dialing")) {
             $('#center').removeClass("dialing");
-            $('#number').text("");
+            $('#number .num').text("");
         } else {
             $('#center').add("dialing");
-            $('#number').text("");
+            $('#number .num').text("");
             setTimeout(function() {
                 $('#center').remove("dialing");
             }, 10000);

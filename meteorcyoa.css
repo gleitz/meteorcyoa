@@ -100,6 +100,7 @@ html[xmlns] .clr {
     -moz-transform-origin: 27px -87px;
     -webkit-transform-origin: 27px -87px;
     transform-origin: 27px -87px;
+    cursor: pointer;
 }
 .hole.b2 { -moz-transform: rotate(30deg); }
 .hole.b3 { -moz-transform: rotate(60deg); }
@@ -216,6 +217,7 @@ html[xmlns] .clr {
 
 #chart {
     position: absolute;
-    right: 10px;
-    top: 10px;
+    left: 75px;
+    top: 75px;
+    z-index: 10;
 }

@@ -1,81 +1,214 @@
-Meteor.startup(function () {
-    var width = 300,
-        height = 300;
+(function($, window){
 
-    var color = d3.scale.category10();
+    var instance = null;
+	var Graph = function(){
+        var self = this,
+            width = 150,
+            height = 150,
+            link = null,
+            node = null,
+            links = [],
+            nodes = [],
+            force = null,
+            update = null;
 
-    var force = d3.layout.force()
-        .gravity(0)
-        .charge(-5000)
-        .linkDistance(30)
-        .size([width, height]);
+        var color = d3.scale.category10();
 
-    var svg = d3.select("#chart").append("svg")
-        .attr("width", width)
-        .attr("height", height);
+        var svg = d3.select("#chart").append("svg")
+            .attr("width", width)
+            .attr("height", height);
 
-    function flatten(root) {
-        var nodes = [];
-        function recurse(node) {
-            if (node.children) node.children.forEach(recurse);
-            nodes.push(node);
+        function flatten(root) {
+            var nodes = [];
+            function recurse(node) {
+                if (node.children) node.children.forEach(recurse);
+                nodes.push(node);
+            }
+            recurse(root);
+            return nodes;
         }
-        recurse(root);
-        return nodes;
-    }
 
-    d3.json("nodes.json", function(error, graph) {
-        var nodes = flatten(graph),
-        links = d3.layout.tree().links(nodes);
+        d3.json("nodes.json", function(error, graph) {
+            nodes = flatten(graph),
+            links = d3.layout.tree().links(nodes);
 
-        graph.fixed = true;
-        graph.x = width / 2;
-        graph.y = 50;
-
-        force
-            .nodes(nodes)
-                .links(links)
-            .start();
-
-        var link = svg.selectAll(".link")
-            .data(links)
-            .enter().append("line")
-            .attr("class", "link");
-
-        var node = svg.selectAll(".node")
-            .data(nodes)
-            .enter().append("g")
-            .attr("class", "node")
-            .call(force.drag);
-
-        node.append("image")
-            .attr("xlink:href", "https://github.com/favicon.ico")
-            .attr("x", -8)
-            .attr("y", -8)
-            .attr("width", 16)
-            .attr("height", 16);
-
-        node.append("text")
-            .attr("dx", 12)
-            .attr("dy", ".35em")
-            .attr('fill', '#fff')
-            .text(function(d) { return d.name });
-
-
-        force.on("tick", function(e) {
-
-            var kx = .4 * e.alpha, ky = 1.4 * e.alpha;
-            links.forEach(function(d, i) {
-                d.target.x += (d.source.x - d.target.x) * kx;
-                d.target.y += (d.source.y + 80 - d.target.y) * ky;
+            nodes = _.map(nodes, function(e) {
+                if (e.id == 1) {
+                    e.fixed = true;
+                }
+                e['x'] = width / 2;
+                e['y'] = height / 4;
+                return e;
             });
 
-            link.attr("x1", function(d) { return d.source.x; })
-                .attr("y1", function(d) { return d.source.y; })
-                .attr("x2", function(d) { return d.target.x; })
-                .attr("y2", function(d) { return d.target.y; });
+            // Create the graph
+	        force = d3.layout.force()
+		        .gravity(0)
+		        .distance(20)
+		        .charge(-100)
+		        .on('tick', tick)
+		        .size([width, height]);
 
-            node.attr("transform", function(d) { return "translate(" + d.x + "," + d.y + ")"; });
+            update = function() {
+
+                // Add the data
+	            force.nodes(nodes)
+		            .links(links)
+		            .start();
+
+	            // Draw the links
+	            link = svg.selectAll(".link").data(force.links());
+
+	            // Update the new links
+	            link.enter().append("line")
+                    .attr("class", "link")
+                    .style("stroke-width", function(d) {
+                        return 3;
+                    })
+                    .style("stroke", function(d) { return "#000"; })
+                    .style("stroke-opacity", function(d) { return .5; });
+
+	            // Remove the old links
+	            link.exit().remove();
+
+	            // Draw the nodes
+	            node = svg.selectAll(".node").data(force.nodes());
+
+	            // Update the new nodes
+	            node.enter().append("svg:g")
+                    .attr("class", "node")
+                    .call(force.drag);
+
+                node.append("circle").attr("r", 10)
+                    .style("fill", function(d) {
+                        if (d.visited) {
+                            return d.color;
+                        } else {
+                            return 'black';
+                        }});
+
+                node.append("svg:text")
+                    .style("font-size", "12px")
+                    .attr("text-anchor", "middle")
+                    .attr("dy", ".35em")
+                    .attr('fill', '#FFF')
+                    .text(function(d) { return d.id; });
+
+                // make sure all the links are behind the nodes
+                link.sort(function(a, b) {
+                    return 1;
+                });
+	            // Remove the old nodes
+	            node.exit().remove();
+
+            };
+
+	        // Create the tick function which animates the graph
+            function tick (e) {
+
+                var kx = .1 * e.alpha, ky = .1 * e.alpha;
+                links.forEach(function(d, i) {
+                    d.target.x += (d.source.x - d.target.x) * kx;
+                    d.target.y += (d.source.y + 30 - d.target.y) * ky;
+                });
+
+                link.attr("x1", function(d) { return d.source.x; })
+                    .attr("y1", function(d) { return d.source.y; })
+                    .attr("x2", function(d) { return d.target.x; })
+                    .attr("y2", function(d) { return d.target.y; });
+
+                node.attr("transform", function(d) { return "translate(" + d.x + "," + d.y + ")"; });
+            }
+	        // function tick()
+	        // {
+		    // link.attr("x1", function(d) { return d.source.x; })
+		    // .attr("y1", function(d) { return d.source.y; })
+		    // .attr("x2", function(d) { return d.target.x; })
+		    // .attr("y2", function(d) { return d.target.y; });
+		    // // node.attr("transform", function(d) { return "translate(" + d.x + "," + d.y + ")"; });
+	        // }
+
         });
-    });
-});
+
+        $.extend(self, {
+            findNode: function(id) {
+                for (var i in nodes) {
+                    if (nodes[i]["id"] === id) {
+                        return nodes[i];
+                    }
+                }
+                return null;
+            },
+
+            centerNode: function(id) {
+                for (var i in nodes) {
+                    if (nodes[i]["id"] === id) {
+                        nodes[i].x = width / 2;
+                        nodes[i].y = height / 4;
+                        nodes[i].px = width / 2;
+                        nodes[i].py = height / 4;
+                        nodes[i].center = true;
+                        nodes[i].fixed = true;
+                        nodes[i].visited = true;
+                    } else {
+                        nodes[i].center = false;
+                        nodes[i].fixed = false;
+                    }
+                };
+                update();
+                force.resume();
+            },
+
+            createLink: function(source_id, target_id) {
+                var source_page = Pages.findOne({id: source_id}),
+                    target_page = Pages.findOne({id: target_id});
+                if (!_.contains(target_page.children, source_page.id) && source_page.id != 2) {
+                    return;
+                }
+                var source = self.findNode(source_id),
+                    target = self.findNode(target_id),
+                    source_x = randRange(0, 100),
+                    source_y = randRange(0, 100),
+                    target_x = randRange(0, 100),
+                    target_y = randRange(0, 100);
+                source.x = source.px = source_x;
+                source.y = source.py = source_y;
+                target.x = target.px = target_x;
+                target.y = target.py = target_y;
+                links.push({source: source, target: target});
+            },
+
+            createNode: function(page) {
+                var node = self.findNode(page.id);
+                if (!node) {
+                    nodes.push({id: page.id, x: 100, y: 100, color: page.color});
+                }
+            },
+
+            addNode: function(page, linked_id) {
+                if (!force) {
+                    return;
+                }
+                force.stop();
+                self.createNode(page);
+                _.each(page.children, function(e) {
+                    var child = Pages.findOne({id:e});
+                    self.createNode(child);
+                    self.createLink(child.id, page.id);
+                });
+                self.createLink(page.id, linked_id);
+                update();
+                force.resume();
+            }
+
+        });
+
+    };
+
+    $.graph = function(){
+	    if(instance === null){
+		    instance = new Graph();
+	    }
+	    return instance;
+    };
+})(jQuery, window);

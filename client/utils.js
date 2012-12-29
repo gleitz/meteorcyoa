@@ -1,8 +1,4 @@
 function playTrack(number) {
-    number = parseInt(number, 10);
-    if (number == 1980) {
-        number = 2;
-    }
     var padded = pad(number, 3);
     $('#player').attr('src', '/sounds/track' + padded + (buzz.isOGGSupported() ? '.ogg' : '.mp3')).get(0).play();
     return false;
@@ -42,4 +38,9 @@ function offset(el) {
             left: Math.round(point.x * -200/scale.x)
         };
     }
+}
+
+function randRange(low, high) {
+    var num = Math.floor(Math.random()*(high-low) + 1);
+    return num + low;
 }
