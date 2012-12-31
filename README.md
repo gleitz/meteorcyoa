@@ -7,7 +7,7 @@ Usage
 -----
 
 *  Install [Meteor](http://www.meteor.com/) (`curl https://install.meteor.com | /bin/sh`)
-*  `meteor`
+*  Start server with `meteor`
 *  Navigate to localhost:3000
 *  To deploy, run `meteor deploy YOUR-APP-NAME.meteor.com`
 
