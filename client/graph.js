@@ -49,6 +49,16 @@
 		        .on('tick', tick)
 		        .size([width, height]);
 
+            var updateColor = function(d) {
+                if (d.center) {
+                    return 'green';
+                } else if (d.visited) {
+                    return '#7f7f7f';
+                } else {
+                    return 'black';
+                }
+            };
+
             update = function() {
 
                 // Add the data
@@ -72,34 +82,39 @@
 	            link.exit().remove();
 
 	            // Draw the nodes
-	            node = svg.selectAll(".node").data(force.nodes());
+	            node = svg.selectAll(".node").data(force.nodes(), function(d) {return d.id;});
 
-	            // Update the new nodes
-	            node.enter().append("svg:g")
+	            // Insert the new nodes
+	            var svg_g = node.enter().append("svg:g");
+                svg_g
                     .attr("class", "node")
-                    .call(force.drag);
+                    .call(force.drag)
 
-                node.append("circle").attr("r", 10)
-                    .style("fill", function(d) {
-                        if (d.visited) {
-                            return d.color;
-                        } else {
-                            return 'black';
-                        }});
+                .append("circle").attr("r", 10)
+                    .style("fill", updateColor);
 
-                node.append("svg:text")
+                svg_g.append("svg:text")
                     .style("font-size", "12px")
                     .attr("text-anchor", "middle")
                     .attr("dy", ".35em")
                     .attr('fill', '#FFF')
-                    .text(function(d) { return d.id; });
+                    .text(function(d) {
+                        if (_.contains([1,2], d.id)) {
+                            return "";
+                        }
+                        return d.id;
+                    });
+
+                // Update existing nodes
+                node.select('circle').style("fill", updateColor);
+
+                // Remove the old nodes
+	            node.exit().remove();
 
                 // make sure all the links are behind the nodes
                 link.sort(function(a, b) {
                     return 1;
                 });
-	            // Remove the old nodes
-	            node.exit().remove();
 
             };
 
@@ -119,14 +134,6 @@
 
                 node.attr("transform", function(d) { return "translate(" + d.x + "," + d.y + ")"; });
             }
-	        // function tick()
-	        // {
-		    // link.attr("x1", function(d) { return d.source.x; })
-		    // .attr("y1", function(d) { return d.source.y; })
-		    // .attr("x2", function(d) { return d.target.x; })
-		    // .attr("y2", function(d) { return d.target.y; });
-		    // // node.attr("transform", function(d) { return "translate(" + d.x + "," + d.y + ")"; });
-	        // }
 
         });
 

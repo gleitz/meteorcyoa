@@ -1,6 +1,6 @@
 <head>
     <title>Yet Another Choose Your Own Adventure</title>
-    <meta name="viewport" content="width=device-width;initial-scale=1;">
+    <meta name="viewport" content="width=device-width, initial-scale=0.6, maximum-scale=1.0; minimum-scale=0.5">
 </head>
 
 <body>
@@ -10,22 +10,24 @@
             <h1>Yet Another<br/>Choose Your Own Adventure</h1>
         </div>
 
-        <div id="number"><span class="num"></span><span id="intro">Click phone icon to begin...</span></div>
+        <div id="number"><span class="num"></span><span id="intro">Click phone to begin</span></div>
 
-        <div id="phone">
-            <div id="chart">
+        <div id="phone-container">
+            <div id="phone">
+                <div id="chart">
+                </div>
+                {{> dial}}
+
+                <div id="stop"></div>
             </div>
-            {{> dial}}
-
-            <div id="stop"></div>
         </div>
 
         <div id="footer">
-            Benjamin Gleitzman <a href="http://twitter.com/gleitz">@gleitz</a>
-        </div>
-        <div id="share">
-            <div style="width: 50px; overflow: hidden; vertical-align: top;" class="fb-like" data-send="false" data-layout="button_count" data-width="450" data-show-faces="false" data-colorscheme="dark"></div>
-            <a href="https://twitter.com/share" class="twitter-share-button" data-via="gleitz" data-related="gleitz" data-count="none" data-hashtags="ChooseYourOwnAdventure">Tweet</a>
+            Benjamin Gleitzman (<a href="http://twitter.com/gleitz">@gleitz</a>)
+            <div id="share">
+                <div style="width: 50px; overflow: hidden; vertical-align: top;" class="fb-like" data-send="false" data-layout="button_count" data-width="450" data-show-faces="false" data-colorscheme="light"></div>
+                <a href="https://twitter.com/share" class="twitter-share-button" data-via="gleitz" data-related="gleitz" data-count="none" data-hashtags="ChooseYourOwnAdventure">Tweet</a>
+            </div>
         </div>
         <audio id="rewind-player" preload="auto">
             <source src="/sounds/rewind.ogg" type="audio/ogg">

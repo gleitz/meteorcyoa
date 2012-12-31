@@ -1,10 +1,60 @@
+html, body, div, span, applet, object, iframe,
+h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+a, abbr, acronym, address, big, cite, code,
+del, dfn, em, img, ins, kbd, q, s, samp,
+small, strike, strong, sub, sup, tt, var,
+b, u, i, center,
+dl, dt, dd, ol, ul, li,
+fieldset, form, label, legend,
+table, caption, tbody, tfoot, thead, tr, th, td,
+article, aside, canvas, details, embed,
+figure, figcaption, footer, header, hgroup,
+menu, nav, output, ruby, section, summary,
+time, mark, audio, video {
+	margin: 0;
+	padding: 0;
+	border: 0;
+	font-size: 100%;
+	font: inherit;
+	vertical-align: baseline;
+}
+/* HTML5 display-role reset for older browsers */
+article, aside, details, figcaption, figure,
+footer, header, hgroup, menu, nav, section {
+	display: block;
+}
+body {
+	line-height: 1;
+}
+ol, ul {
+	list-style: none;
+}
+blockquote, q {
+	quotes: none;
+}
+blockquote:before, blockquote:after,
+q:before, q:after {
+	content: '';
+	content: none;
+}
+table {
+	border-collapse: collapse;
+	border-spacing: 0;
+}
+
 * {
     -moz-box-sizing: border-box;
     box-sizing: border-box;
 }
 
+h1 {
+    font-size: 32px;
+    font-weight: bold;
+}
 body {
-    background: #000;
+    background-image: url('/phone.jpg');
+    background-repeat: no-repeat;
+    background-position: center 0;
     font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
     font-weight: 200;
     padding: 0;
@@ -15,6 +65,10 @@ body {
     user-select: none;
 }
 
+a {
+    color: #FFF;
+    text-decoration: none;
+}
 
 .clr:after {
 	content: ".";
@@ -38,30 +92,36 @@ html[xmlns] .clr {
 }
 
 #container {
-    width: 480px;
     margin: 0 auto;
+}
+
+#phone-container {
+    text-align: center;
+    position: absolute;
+    left: 50%;
+    top: 270px;
 }
 
 #share {
     text-align: center;
-    margin-top: 8px;
+    margin-top: 68px;
 }
 
 #heading {
+    margin: 14px 0;
     color: #FFF;
     text-align: center;
 }
 
 #phone {
     position: relative;
-    margin: 80px auto 0;
-    width: 300px;
-    height: 300px;
-    -moz-transform: scale(1.4);
-    transform: scale(1.4);
-    -webkit-transform: scale(1.4);
+    -moz-transform: scale(1.35);
+    transform: scale(1.35);
+    -webkit-transform: scale(1.35);
     overflow: hidden;
+    left: -50%;
 }
+
 #dialer {
     position: relative;
     width: 300px; height: 300px;
@@ -198,22 +258,27 @@ html[xmlns] .clr {
 }
 
 #number {
+    text-align: center;
     font-size: 30px;
     line-height: 50px;
     height: 50px;
     padding: 0 10px;
-    margin: 10px 10px;
+    margin: 30px auto;
     border-radius: 5px;
     border: none;
     background-color: rgb(229, 229, 229);
+    width: 340px;
 }
 
 #footer {
-    position: relative;
-    margin-top: 100px;
+    position: absolute;
     text-align: center;
-    color: #FFF;
+    color: white;
     font-size: 18px;
+    width: 300px;
+    left: 50%;
+    margin-left: -150px;
+    top: 640px;
 }
 
 #chart {
@@ -225,7 +290,7 @@ html[xmlns] .clr {
 }
 
 #chart svg {
-    -webkit-border-radius: 50px;
-    -moz-border-radius: 50px;
-    border-radius: 50px;
+    -webkit-border-radius: 100px;
+    -moz-border-radius: 100px;
+    border-radius: 100px;
 }

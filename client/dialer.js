@@ -19,6 +19,14 @@
         var rect = $('#dialer').get(0).getBoundingClientRect();
         centerX = rect.left + rect.width / 2;
         centerY = rect.top + rect.height / 2;
+
+        $('html').on('mouseup', 'body', mouseup);
+        $('html').on('click', 'body', function(evt) {
+            if (!started) {
+                evt.preventDefault();
+                begin();
+            }
+        });
     });
 
     var getAngle = function (x, y) {
@@ -143,18 +151,24 @@
             moving = false;
         };
         clearTimeout(endTimeout);
-        endTimeout = setTimeout(onEnd, 1000);
+        endTimeout = setTimeout(onEnd, 800);
         clearTimeout(numberTimeout);
         var numberSubmit = function() {
             var number = parseInt($('#number .num').text(), 10);
             if (number == 1980) {
                 number = 2;
             }
+            if (number == 0) {
+                number = 10;
+            }
             var page = Pages.findOne({id:number});
             var thisPage = Pages.findOne({id:currentPage});
             if (!page || (page && !_.contains(thisPage.children, page.id)) && (page.id != 2 && !graph.findNode(page.id))) {
                 $('#number .num').text("");
-                $('#intro').html('Invalid number &mdash; dial again...');
+                $('#intro').text('Invalid number');
+                setTimeout(function() {
+                    $('#intro').text('');
+                }, 1000);
                 return;
             }
             graph.addNode(page, currentPage);
@@ -177,27 +191,34 @@
         }, 3000);
     };
 
-    var click = function (e) {
-        if (rotating || moving) {
-            return;
-        }
-
-        if ($('#center').hasClass("dialing")) {
-            $('#center').removeClass("dialing");
-            $('#number .num').text("");
-        } else {
-            $('#chart').show();
-            $('#center').add("dialing");
-            $('#number .num').text("");
-            $('#intro').text("");
-            setTimeout(function() {
-                $('#center').remove("dialing");
-            }, 10000);
-            playTrack(1);
-        }
+    var begin = function() {
+        started = true;
+        $('#chart').show();
+        $('#center').add("dialing");
+        $('#number .num').text("");
+        $('#intro').text("Welcome...");
+        setTimeout(function() {
+            $('#intro').text('');
+        }, 15000);
+        setTimeout(function() {
+            $('#center').remove("dialing");
+        }, 10000);
+        playTrack(1);
     };
+    var started = false,
+        click = function (e) {
+            if (rotating || moving) {
+                return;
+            }
 
-    $('html').on('mouseup', 'body', mouseup);
+            if ($('#center').hasClass("dialing")) {
+                $('#center').removeClass("dialing");
+                $('#number .num').text("");
+            } else {
+                begin();
+            }
+        };
+
     Template.dial.events({
         'mousedown #dialer': mousedown,
         'mousemove #dialer': mousemove,
