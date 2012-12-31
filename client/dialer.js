@@ -1,32 +1,40 @@
 (function($){
-    var hole = null,
-        digit = null,
-        moving = false,
-        selected = false,
-        rotating = false,
-        lastAngle = null,
-        totalAngle = null,
-        maxAngle = null,
-        numberTimeout = null,
-        endTimeout = null,
-        centerX = null,
-        centerY = null,
-        graph = null,
+    var hole,
+        digit,
+        moving,
+        selected,
+        rotating,
+        lastAngle,
+        totalAngle,
+        maxAngle,
+        numberTimeout,
+        endTimeout,
+        centerX,
+        centerY,
+        graph,
+        $dialer,
+        $phone_center,
+        $number,
+        $intro,
         currentPage = 1;
 
     Meteor.startup(function () {
+        $dialer = $('#dialer'),
+        $phone_center = $('#center');
+        $number = $('#number .num');
+        $intro = $('#intro');
         graph = $.graph();
-        var rect = $('#dialer').get(0).getBoundingClientRect();
+        var rect = $dialer.get(0).getBoundingClientRect();
         centerX = rect.left + rect.width / 2;
         centerY = rect.top + rect.height / 2;
 
-        $('html').on('mouseup', 'body', mouseup);
-        $('html').on('click', 'body', function(evt) {
-            if (!started) {
-                evt.preventDefault();
-                begin();
-            }
-        });
+        $('html').on('mouseup', 'body', mouseup)
+            .on('click', 'body', function(evt) {
+                if (!started) {
+                    evt.preventDefault();
+                    begin();
+                }
+            });
     });
 
     var getAngle = function (x, y) {
@@ -106,8 +114,8 @@
         moving = true;
         lastAngle = getAngle(event.clientX, event.clientY);
         totalAngle = 0;
-        $('#dialer').addClass('rotating');
-        $('#center').addClass('rotating');
+        $dialer.addClass('rotating');
+        $phone_center.addClass('rotating');
         event.preventDefault();
     };
 
@@ -121,8 +129,8 @@
         totalAngle += diff;
         var rotation = Math.min(maxAngle, Math.max(0, totalAngle));
 
-        $('#dialer').get(0).style.MozTransform = "rotate(" + rotation + "deg)";
-        $('#dialer').get(0).style.WebkitTransform = "rotate(" + rotation + "deg)";
+        $dialer.get(0).style.MozTransform = "rotate(" + rotation + "deg)";
+        $dialer.get(0).style.WebkitTransform = "rotate(" + rotation + "deg)";
         lastAngle = angle;
     };
 
@@ -132,21 +140,21 @@
         }
 
         var rect = hole.getBoundingClientRect();
-        $('#intro').text("");
-        $('#number .num').text($('#number .num').text() + digit);
+        $intro.text("");
+        $number.text($number.text() + digit);
         $('#rewind-player').get(0).play();
 
         moving = false;
         lastAngle = null;
         totalAngle = null;
-        $('#dialer').removeClass('rotating');
-        $('#center').removeClass('rotating');
-        $('#dialer').get(0).style.MozTransform = "";
-        $('#dialer').get(0).style.WebkitTransform = "";
+        $dialer.removeClass('rotating');
+        $phone_center.removeClass('rotating');
+        $dialer.get(0).style.MozTransform = "";
+        $dialer.get(0).style.WebkitTransform = "";
 
         var onEnd = function() {
-            $('#dialer').get(0).style.MozTransform = "";
-            $('#dialer').get(0).style.WebkitTransform = "";
+            $dialer.get(0).style.MozTransform = "";
+            $dialer.get(0).style.WebkitTransform = "";
             rotating = false;
             moving = false;
         };
@@ -154,7 +162,7 @@
         endTimeout = setTimeout(onEnd, 800);
         clearTimeout(numberTimeout);
         var numberSubmit = function() {
-            var number = parseInt($('#number .num').text(), 10);
+            var number = parseInt($number.text(), 10);
             if (number == 1980) {
                 number = 2;
             }
@@ -164,10 +172,10 @@
             var page = Pages.findOne({id:number});
             var thisPage = Pages.findOne({id:currentPage});
             if (!page || (page && !_.contains(thisPage.children, page.id)) && (page.id != 2 && !graph.findNode(page.id))) {
-                $('#number .num').text("");
-                $('#intro').text('Invalid number');
+                $number.text("");
+                $intro.text('Invalid number');
                 setTimeout(function() {
-                    $('#intro').text('');
+                    $intro.text('');
                 }, 1000);
                 return;
             }
@@ -175,12 +183,7 @@
             graph.centerNode(number);
             currentPage = number;
             playTrack(number);
-            // Bind the player ended here?
-            // $("#player").bind('ended', function(){
-                // done playing
-                // alert("Player stopped");
-            // });
-            $('#number .num').text("");
+            $number.text("");
         };
         numberTimeout = setTimeout(function myHandler() {
             if (!moving && !rotating) {
@@ -194,14 +197,14 @@
     var begin = function() {
         started = true;
         $('#chart').show();
-        $('#center').add("dialing");
-        $('#number .num').text("");
-        $('#intro').text("Welcome...");
+        $phone_center.add("dialing");
+        $number.text("");
+        $intro.text("Welcome...");
         setTimeout(function() {
-            $('#intro').text('');
+            $intro.text('');
         }, 15000);
         setTimeout(function() {
-            $('#center').remove("dialing");
+            $phone_center.remove("dialing");
         }, 10000);
         playTrack(1);
     };
@@ -211,9 +214,9 @@
                 return;
             }
 
-            if ($('#center').hasClass("dialing")) {
-                $('#center').removeClass("dialing");
-                $('#number .num').text("");
+            if ($phone_center.hasClass("dialing")) {
+                $phone_center.removeClass("dialing");
+                $number.text("");
             } else {
                 begin();
             }
