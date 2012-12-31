@@ -182,6 +182,10 @@
             graph.addNode(page, currentPage);
             graph.centerNode(number);
             currentPage = number;
+            $.each(page.children, function(i, e) {
+                var padded = pad(e, 3);
+                $('#preload' + (i + 1)).attr('src', '/sounds/track' + padded + (buzz.isOGGSupported() ? '.ogg' : '.mp3'));
+            });
             playTrack(number);
             $number.text("");
         };
