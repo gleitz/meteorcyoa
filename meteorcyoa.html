@@ -49,16 +49,9 @@
     <div>
         <div id="dialer">
             <div id="center">☎</div>
-            <span class="hole digit b1">1</span>
-            <span class="hole digit b2">2</span>
-            <span class="hole digit b3">3</span>
-            <span class="hole digit b4">4</span>
-            <span class="hole digit b5">5</span>
-            <span class="hole digit b6">6</span>
-            <span class="hole digit b7">7</span>
-            <span class="hole digit b8">8</span>
-            <span class="hole digit b9">9</span>
-            <span class="hole digit b0">0</span>
+            {{#each numbers}}
+            <span class="hole digit b{{this}}">{{this}}</span>
+            {{/each}}
         </div>
     </div>
 </template>

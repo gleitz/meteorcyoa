@@ -226,6 +226,8 @@
             }
         };
 
+    Template.dial.numbers = [1, 2, 3, 4, 5, 6, 7, 8, 9, 0];
+
     Template.dial.events({
         'mousedown #dialer': mousedown,
         'mousemove #dialer': mousemove,
