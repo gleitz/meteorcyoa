@@ -1,7 +1,7 @@
 Yet Another Choose Your Own Adventure - Meteor Version
 ========================
 
-Your digital host guides you through a deathly Choose Your Own Adventure game. To play visit [adventure.meteor.com](http://adventure.meteor.com/).
+Your digital host guides you through a deathly Choose Your Own Adventure game. To play visit [adventure.gleitzman.com](http://adventure.gleitzman.com/).
 
 Usage
 -----
