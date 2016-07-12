@@ -1,8 +1,2 @@
-*.pyc
-.DS_Store
-dist/
-build/
-public/
-*.egg-info
-*~
-.#*
+node_modules/
+.tern-port

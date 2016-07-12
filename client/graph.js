@@ -1,7 +1,10 @@
 (function($, window){
-
+    function randRange(low, high) {
+        var num = Math.floor(Math.random()*(high-low) + 1);
+        return num + low;
+    }
     var instance = null;
-	var Graph = function(){
+    var Graph = function(){
         var self = this,
             width = 150,
             height = 150,
@@ -42,12 +45,12 @@
             });
 
             // Create the graph
-	        force = d3.layout.force()
-		        .gravity(0)
-		        .distance(20)
-		        .charge(-100)
-		        .on('tick', tick)
-		        .size([width, height]);
+            force = d3.layout.force()
+                .gravity(0)
+                .distance(20)
+                .charge(-100)
+                .on('tick', tick)
+                .size([width, height]);
 
             var updateColor = function(d) {
                 if (d.center) {
@@ -62,15 +65,15 @@
             update = function() {
 
                 // Add the data
-	            force.nodes(nodes)
-		            .links(links)
-		            .start();
+                force.nodes(nodes)
+                    .links(links)
+                    .start();
 
-	            // Draw the links
-	            link = svg.selectAll(".link").data(force.links());
+                // Draw the links
+                link = svg.selectAll(".link").data(force.links());
 
-	            // Update the new links
-	            link.enter().append("line")
+                // Update the new links
+                link.enter().append("line")
                     .attr("class", "link")
                     .style("stroke-width", function(d) {
                         return 3;
@@ -78,14 +81,14 @@
                     .style("stroke", function(d) { return "#000"; })
                     .style("stroke-opacity", function(d) { return .5; });
 
-	            // Remove the old links
-	            link.exit().remove();
+                // Remove the old links
+                link.exit().remove();
 
-	            // Draw the nodes
-	            node = svg.selectAll(".node").data(force.nodes(), function(d) {return d.id;});
+                // Draw the nodes
+                node = svg.selectAll(".node").data(force.nodes(), function(d) {return d.id;});
 
-	            // Insert the new nodes
-	            var svg_g = node.enter().append("svg:g");
+                // Insert the new nodes
+                var svg_g = node.enter().append("svg:g");
                 svg_g
                     .attr("class", "node")
                     .call(force.drag)
@@ -109,7 +112,7 @@
                 node.select('circle').style("fill", updateColor);
 
                 // Remove the old nodes
-	            node.exit().remove();
+                node.exit().remove();
 
                 // make sure all the links are behind the nodes
                 link.sort(function(a, b) {
@@ -118,7 +121,7 @@
 
             };
 
-	        // Create the tick function which animates the graph
+            // Create the tick function which animates the graph
             function tick (e) {
 
                 var kx = .1 * e.alpha, ky = .1 * e.alpha;
@@ -213,9 +216,9 @@
     };
 
     $.graph = function(){
-	    if(instance === null){
-		    instance = new Graph();
-	    }
-	    return instance;
+        if(instance === null){
+            instance = new Graph();
+        }
+        return instance;
     };
 })(jQuery, window);
